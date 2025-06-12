@@ -10,19 +10,28 @@ import api from "../utils/api";
 
 const Home = () => {
   const [ posts, setPosts ] = useState([]);
+  const [ hasFetchedPosts, setHasFetchedPosts ] = useState(false);
   const { showLoading, hideLoading } = useLoading();
   const { isLoggedIn, user } = useAuth();
 
   useEffect(() => {
     const getPosts = async () => {
-      const { data } = await api.get("/posts");
-      setPosts(data.data);
+      showLoading();
+      try {
+        const { data } = await api.get("/posts");
+        setPosts(data.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        hideLoading();
+        setHasFetchedPosts(true);
+      }
     };
     getPosts();
   }, []);
 
-  const [ currentPage, setCurrentPage ] = useState(1);
   const searchInput = useRef();
+  const [ currentPage, setCurrentPage ] = useState(1);
   const [ searchValue, setSearchValue ] = useState("");
   
   let filteredPosts = posts.filter((post) => {
@@ -86,7 +95,7 @@ const Home = () => {
         {
           filteredPosts.map((post) => <BlogItem id={ post._id } title={ post.title } desc={ post.desc } image={ post.image } createdAt={ post.createdAt } createdBy={ post.createdBy } handleDeletePost={ handleDeletePost } key={ post._id } />)
         }
-        {!posts?.length && <p className="text-center text-xl font-medium">No Posts Yet!</p>}
+        { hasFetchedPosts && !posts.length && <p className="text-center text-xl font-medium">No Posts Yet!</p>}
         {
           !filteredPosts.length && searchValue  && posts.length > 0 && 
           <div className="flex items-center justify-center text-center">

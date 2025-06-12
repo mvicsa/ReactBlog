@@ -1,8 +1,10 @@
 import axios from "axios";
 import { getNavigator } from "./navigate";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: API_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -30,7 +32,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post("http://localhost:3000/auth/refresh-token", {}, { withCredentials: true });
+        const res = await axios.post(`${API_URL}/auth/refresh-token`, {}, { withCredentials: true });
         const newToken = res.data.token;
         localStorage.setItem("token", newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;

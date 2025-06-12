@@ -8,7 +8,7 @@ import { z } from "zod";
 import { useAuth } from "../Contexts/AuthContext";
 import api from "../utils/api";
 
-const EditPost = () => {
+const EditPost = ({ posts, setPosts }) => {
   const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
 
@@ -32,30 +32,26 @@ const EditPost = () => {
   const imgbbApiKey = import.meta.env.VITE_IMGBB_KEY;
 
   useEffect(() => {
-    const getPosts = async () => {
-      try {
-        const { data } = await api.get(`/posts/${id}`);
-        if (user && user._id !== data.data.createdBy?._id) {
-          navigate("/");
-          return;
-        }
-        setPost(data.data);
-      } catch (error) {
-        console.error("Error fetching post:", error);
-        navigate("/");
-      }
-    };
-    
-    if (user) {
-      getPosts();
-    }
-  }, [user, id, navigate]);
+  if (!posts || posts.length === 0) return;
+
+  const postIndex = posts.findIndex(post => post._id === id);
+
+  if (postIndex === -1 || (user && user._id !== posts[postIndex].createdBy._id)) {
+    navigate("/");
+    return;
+  }
+
+  setPost({ ...post, ...posts[postIndex] });
+
+}, [posts, id, user]);
 
   const handleInputChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
-  const handleEditPost = async () => {
+  const handleEditPost = async (e) => {
+    e.preventDefault();
+
     showLoading();
     try {
       let imageUrl = post.image;
@@ -90,6 +86,10 @@ const EditPost = () => {
       const { status } = await api.put(`/posts/${id}`, updatedPost);
 
       if (status === 200) {
+        setPosts(prevPosts =>
+          prevPosts.map(p => (p._id === id ? updatedPost : p))
+        );
+
         showSuccessAlert("Post Updated Successfully!");
         navigate("/");
       }
@@ -115,7 +115,7 @@ const EditPost = () => {
               Go Back
             </ButtonOutlinePrimary>
           </div>
-          <div className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-8 border-1 border-gray-100 dark:border-gray-700 w-full rounded-xl">
+          <form onSubmit={ handleEditPost } className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-8 border-1 border-gray-100 dark:border-gray-700 w-full rounded-xl">
             <div>
               <label className="block dark:text-white mb-2">Title</label>
               <input type="text" onChange={ handleInputChange } name="title" value={ post.title } placeholder="Title" className="border outline-0 rounded-xl border-gray-200 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-600 transition dark:text-white placeholder:text-gray-500 py-2 px-3 w-full" />
@@ -144,9 +144,9 @@ const EditPost = () => {
               <textarea onChange={ handleInputChange } name="desc" value={ post.desc } placeholder="Desc" rows="4" className="border outline-0 rounded-xl border-gray-200 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-600 transition dark:text-white placeholder:text-gray-500 py-2 px-3 w-full"></textarea>
             </div>
             <div>
-              <ButtonPrimary onClick={ handleEditPost } className="w-full">Submit</ButtonPrimary>
+              <ButtonPrimary className="w-full">Submit</ButtonPrimary>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </>

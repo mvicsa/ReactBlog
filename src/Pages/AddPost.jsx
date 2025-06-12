@@ -8,7 +8,7 @@ import { z } from "zod";
 import { useAuth } from "../Contexts/AuthContext";
 import api from "../utils/api";
 
-const AddPost = () => {
+const AddPost = ({ posts, setPosts, setCurrentPage }) => {
   const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
 
@@ -34,7 +34,9 @@ const AddPost = () => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
-  const handleAddPost = async () => {
+  const handleAddPost = async (e) => {
+    e.preventDefault();
+    
     showLoading();
     try {
       let imageUrl = post.image;
@@ -66,10 +68,14 @@ const AddPost = () => {
         return;
       }
 
-      const { status } = await api.post("/posts", addedPost);
+      const { data, status } = await api.post("/posts", addedPost);
 
       if (status === 201) {
+        const dataToAdd = data.data;
+        dataToAdd.createdBy = { _id: dataToAdd.createdBy, name: user.name };
+        setPosts([ ...posts, dataToAdd ]);
         showSuccessAlert("Post Added Successfully!");
+        setCurrentPage(1);
         navigate("/");
       }
     } catch (error) {
@@ -93,7 +99,7 @@ const AddPost = () => {
               Go Back
             </ButtonOutlinePrimary>
           </div>
-          <div className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-8 border-1 border-gray-100 dark:border-gray-700 w-full rounded-xl">
+          <form onSubmit={ handleAddPost } className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-8 border-1 border-gray-100 dark:border-gray-700 w-full rounded-xl">
             <div>
               <label className="block dark:text-white mb-2">Title</label>
               <input type="text" onChange={ handleInputChange } name="title" value={ post.title } placeholder="Title" className="border outline-0 rounded-xl border-gray-200 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-600 transition dark:text-white placeholder:text-gray-500 py-2 px-3 w-full" />
@@ -122,9 +128,9 @@ const AddPost = () => {
               <textarea onChange={ handleInputChange } name="desc" value={ post.desc } placeholder="Desc" rows="4" className="border outline-0 rounded-xl border-gray-200 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-600 transition dark:text-white placeholder:text-gray-500 py-2 px-3 w-full"></textarea>
             </div>
             <div>
-              <ButtonPrimary onClick={ handleAddPost } className="w-full">Submit</ButtonPrimary>
+              <ButtonPrimary className="w-full">Submit</ButtonPrimary>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </>

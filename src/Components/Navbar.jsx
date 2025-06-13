@@ -9,7 +9,7 @@ const Navbar = () => {
   const { isLoggedIn, user, logout } = useAuth();
 
   return (
-    <nav className="bg-white dark:bg-gray-950 border-b-1 border-b-gray-200 dark:border-b-gray-800 px-3 sticky top-0 z-50 h-[70px]">
+    <nav className="bg-white dark:bg-gray-950 border-b-1 border-b-gray-200 dark:border-b-gray-800 px-4 sticky top-0 z-50 h-[70px]">
       <div className="flex items-center justify-between gap-4 h-full">
         <div className="logo">
           <h1 className="text-3xl font-bold text-blue-600 uppercase">Blog</h1>

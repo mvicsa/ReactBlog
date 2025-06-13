@@ -105,7 +105,7 @@ const EditPost = () => {
 
   return (
     <>
-      <div className="grow bg-gray-50 dark:bg-gray-900 py-10">
+      <div className="grow bg-gray-50 dark:bg-gray-900 py-10 px-4">
         <div className="max-w-[800px] mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold">Edit Post</h2>

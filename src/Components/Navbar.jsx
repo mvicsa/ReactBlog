@@ -20,7 +20,7 @@ const Navbar = () => {
             !isLoggedIn ? (
               <>
                 <ButtonOutlinePrimary onClick={() => navigate("/login")}>Login</ButtonOutlinePrimary>
-                <ButtonPrimary onClick={() => navigate("/register")}>Register</ButtonPrimary>
+                <ButtonPrimary onClick={() => navigate("/register")} className="!hidden sm:!flex">Register</ButtonPrimary>
               </>
             ) : (
               <>

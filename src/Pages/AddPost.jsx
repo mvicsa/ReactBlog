@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { ButtonOutlinePrimary, ButtonPrimary } from "../Components/Buttons";
 import { showErrorAlert, showSuccessAlert } from "../utils/alerts";
 import { useLoading } from "../Contexts/LoadingContext";
@@ -8,7 +8,8 @@ import { z } from "zod";
 import { useAuth } from "../Contexts/AuthContext";
 import api from "../utils/api";
 
-const AddPost = ({ posts, setPosts, setCurrentPage }) => {
+const AddPost = () => {
+  const { posts, setPosts, setCurrentPage } = useOutletContext();
   const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
 

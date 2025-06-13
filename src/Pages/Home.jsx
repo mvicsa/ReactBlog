@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import { ButtonPrimary } from "../Components/Buttons";
 import BlogItem from "../Components/BlogItem";
 import numberToArray from "../utils/number";
+import { useOutletContext } from "react-router-dom";
+import { useAuth } from "../Contexts/AuthContext";
 
-const Home = (props) => {
+const Home = () => {
   const {
     posts,
     hasFetchedPosts,
@@ -12,9 +14,10 @@ const Home = (props) => {
     handleSearch,
     currentPage,
     handlePagination,
-    handleDeletePost,
-    isLoggedIn
-  } = props;
+    handleDeletePost
+  } = useOutletContext();
+
+  const { isLoggedIn } = useAuth();
 
   let filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(searchValue.toLowerCase())
@@ -39,7 +42,7 @@ const Home = (props) => {
           <input
             ref={ searchInput }
             placeholder="Type to Search..."
-            className="border outline-0 rounded-xl border-gray-200 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-600 transition placeholder:text-gray-500 py-2 px-3 grow"
+            className="border outline-0 rounded-xl border-gray-200 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-600 transition placeholder:text-gray-500 py-2 px-3 grow min-w-0"
           />
           <ButtonPrimary>Search</ButtonPrimary>
         </form>
@@ -48,14 +51,14 @@ const Home = (props) => {
       <div className="flex flex-col gap-4 pb-[40px] max-w-[800px] mx-auto">
         {filteredPosts.map((post) => (
           <BlogItem
-            key={post._id}
-            id={post._id}
-            title={post.title}
-            desc={post.desc}
-            image={post.image}
-            createdAt={post.createdAt}
-            createdBy={post.createdBy}
-            handleDeletePost={handleDeletePost}
+            key={ post._id }
+            id={ post._id }
+            title={ post.title }
+            desc={ post.desc }
+            image={ post.image }
+            createdAt={ post.createdAt }
+            createdBy={ post.createdBy }
+            handleDeletePost={ handleDeletePost }
           />
         ))}
 
@@ -87,7 +90,7 @@ const Home = (props) => {
           </div>
         )}
 
-        {isLoggedIn && (
+        { isLoggedIn && (
           <Link
             to="/add"
             className="flex items-center justify-center border-1 border-blue-600  rounded-full cursor-pointer w-[50px] h-[50px] transition hover:scale-105 bg-blue-600 text-white fixed bottom-5 right-5"

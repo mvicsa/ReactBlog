@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import error404 from '../assets/images/404.svg';
 import { ButtonOutlinePrimary } from '../Components/Buttons';
 
